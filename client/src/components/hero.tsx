@@ -1,9 +1,11 @@
-import React from "react";
+"use client"; 
+import React, { useState } from "react";
 import { Textarea } from "./ui/textarea";
 import { CheckCheck } from "lucide-react";
 import { Button } from "./ui/button";
 import { Sedgwick_Ave_Display } from "next/font/google";
 import { cn } from "@/lib/utils";
+import axios from "axios";
 
 const font = Sedgwick_Ave_Display({
   subsets: ["latin"],
@@ -11,6 +13,33 @@ const font = Sedgwick_Ave_Display({
 });
 
 const Hero = () => {
+  const [comment, setComment] = useState("");
+  const [response, setResponse] = useState<string | null>(null);
+
+  const handleCommentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setComment(e.target.value);
+  };
+
+  const handleCheckToxicity = async () => {
+    try {
+      const result = await axios.post("http://localhost:5000/predict/", {
+        input: comment,
+      });
+      setResponse(result.data);
+    } catch (error) {
+      console.error("Error checking toxicity:", error);
+      setResponse(null);
+    }
+  };
+
+  const parseResponse = (response: string) => {
+    const lines = response.split("\n").filter(line => line.trim() !== "");
+    return lines.map(line => {
+      const [label, value] = line.split(": ");
+      return { label, value: value === "True" };
+    });
+  };
+
   return (
     <div className="grid grid-cols-2 items-center justify-center max-w-7xl mx-auto h-full py-32 px-10 gap-x-28">
       <div className="flex flex-col">
@@ -42,6 +71,8 @@ const Hero = () => {
           <Textarea
             className="p-4 flex h-36 w-[32rem] resize-none"
             placeholder="Enter Your Comment ..."
+            value={comment}
+            onChange={handleCommentChange}
           />
         </div>
         <div className="relative px-8 sm:px-16 md:px-0 md:mx-auto md:max-w-xl w-full lg:mx-0">
@@ -52,9 +83,32 @@ const Hero = () => {
             className="absolute w-[6.5rem] left-2/3 -top-0 select-none hidden sm:block"
           />
           <div className="flex justify-end mt-2">
-            <Button className="bg-red-600">Check Toxicity</Button>
+            <Button className="bg-red-600" onClick={handleCheckToxicity}>
+              Check Toxicity
+            </Button>
           </div>
         </div>
+        {response && (
+          <div className="mt-4 p-4 bg-gray-100 rounded-lg">
+            <h2 className="text-2xl mb-4">Response:</h2>
+            <table className="min-w-full bg-white">
+              <thead>
+                <tr>
+                  <th className="py-2 px-4 border-b border-gray-200">Label</th>
+                  <th className="py-2 px-4 border-b border-gray-200">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {parseResponse(response).map(({ label, value }) => (
+                  <tr key={label}>
+                    <td className="py-2 px-4 border-b border-gray-200">{label}</td>
+                    <td className="py-2 px-4 border-b border-gray-200">{value ? "True" : "False"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
