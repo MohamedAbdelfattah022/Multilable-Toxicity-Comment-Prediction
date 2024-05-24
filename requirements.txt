@@ -2,3 +2,6 @@ Flask==3.0.3
 Flask_Cors==4.0.1
 nltk==3.8.1
 tensorflow==2.10.0
+pandas
+numpy
+matplotlib
