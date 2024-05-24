@@ -103,7 +103,7 @@ const Hero = () => {
                     {parseResponse(response).map(({ label, value }) => (
                       <tr key={label}>
                         <td className="py-2 px-4 border-b border-gray-200">{label}</td>
-                        <td className="py-2 px-4 border-b border-gray-200">{value ? <div className="text-green-500"><Check className="w-5 h-5" /></div> : <div className="text-red-500"><X className="w-5 h-5" /></div>}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">{value ? <div className="text-green-500"><Check className="w-4 h-4" /></div> : <div className="text-red-500"><X className="w-4 h-4" /></div>}</td>
                       </tr>
                     ))}
                   </tbody>
