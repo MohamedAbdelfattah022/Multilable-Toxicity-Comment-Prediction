@@ -44,7 +44,7 @@ const Hero = () => {
   };
 
   return (
-    <div className="grid grid-cols-2 items-center justify-center max-w-7xl mx-auto h-full py-32 px-10 gap-x-28">
+    <div className="grid grid-cols-2 items-center justify-center max-w-7xl mx-auto h-1 py-32 px-10 gap-x-28">
       <div className="flex flex-col">
         <h1 className="text-5xl mb-5">Toxicity Detection</h1>
         <div className="text-xl">
