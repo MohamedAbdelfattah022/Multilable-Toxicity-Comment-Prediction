@@ -34,6 +34,8 @@ Toxicity Prediction is a machine learning project that classifies comments into 
 ## Application UI
 
 <img id="application-ui" alt="UI" src="pics\home.png">
+<img id="application-ui" alt="UI" src="pics\sample1.png">
+<img id="application-ui" alt="UI" src="pics\sample2.png">
 
 ## Technologies
 
