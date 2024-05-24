@@ -1,8 +1,7 @@
 "use client";
 import React, { useState } from "react";
-import { CheckCheck } from "lucide-react";
+import { Check, CheckCheck, Loader2, X } from "lucide-react";
 import axios from "axios";
-import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Sedgwick_Ave_Display } from "next/font/google";
@@ -16,12 +15,14 @@ const font = Sedgwick_Ave_Display({
 const Hero = () => {
   const [comment, setComment] = useState("");
   const [response, setResponse] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleCommentChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setComment(e.target.value);
   };
 
   const handleCheckToxicity = async () => {
+    setIsLoading(true);
     try {
       const result = await axios.post("http://localhost:5000/predict/", {
         input: comment,
@@ -31,6 +32,7 @@ const Hero = () => {
       console.error("Error checking toxicity:", error);
       setResponse(null);
     }
+    setIsLoading(false);
   };
 
   const parseResponse = (response: string) => {
@@ -68,25 +70,29 @@ const Hero = () => {
         </ul>
       </div>
       <div>
-        <div className="flex flex-col space-y-4 p-3 rounded-xl bg-gray-900/5 ring-1 ring-inset ring-gray-900/10">  
-         <div className="flex items-center gap-x-3 w-full">
-          <Input
-            className="flex"
-            placeholder="Enter Your Comment ..."
-            value={comment}
-            onChange={handleCommentChange}
-          />
-          <div className="flex justify-end">
-            <Button className="bg-red-600" onClick={handleCheckToxicity}>
-              Check Toxicity
-            </Button>
+        <div className="flex flex-col space-y-4 p-3 rounded-xl bg-gray-900/5 ring-1 ring-inset ring-gray-900/10">
+          <div className="flex items-center gap-x-3 w-full">
+            <Input
+              className="flex"
+              placeholder="Enter Your Comment ..."
+              value={comment}
+              onChange={handleCommentChange}
+            />
+            <div className="flex justify-end">
+              <Button className="bg-red-600" onClick={handleCheckToxicity} disabled={isLoading}>
+                Check Toxicity
+              </Button>
+            </div>
           </div>
-          </div>
-          <div className="h-36 mt-4 rounded-lg border-2 border-dashed border-zinc-300 text-sm flex items-center justify-center">
-            {response ? (
-              <div className="w-full h-full overflow-y-auto p-4 ">
-                <h2 className="text-2xl mb-4">Response:</h2>
-                <table className="min-w-full bg-white">
+          <div className="h-auto mt-4 rounded-lg border-2 border-dashed border-zinc-300 text-sm flex items-center justify-center">
+            {isLoading ? (
+              <p className="py-20 flex flex-col gap-2 items-center justify-center">
+                <Loader2 className="animate-spin" />
+                <span>Just a few sec...</span>
+              </p>
+            ) : response ? (
+              <div className="w-full h-full p-4">
+                <table className="min-w-full bg-white rounded-lg">
                   <thead>
                     <tr>
                       <th className="py-2 px-4 border-b border-gray-200">Label</th>
@@ -97,14 +103,14 @@ const Hero = () => {
                     {parseResponse(response).map(({ label, value }) => (
                       <tr key={label}>
                         <td className="py-2 px-4 border-b border-gray-200">{label}</td>
-                        <td className="py-2 px-4 border-b border-gray-200">{value ? "True" : "False"}</td>
+                        <td className="py-2 px-4 border-b border-gray-200">{value ? <div className="text-green-500"><Check className="w-5 h-5" /></div> : <div className="text-red-500"><X className="w-5 h-5" /></div>}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
             ) : (
-              "Results will be shown here"
+              <p className="py-20">Results will be shown here</p>
             )}
           </div>
         </div>
